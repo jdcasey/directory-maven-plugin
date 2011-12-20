@@ -66,7 +66,7 @@ The basic plugin declaration looks like the following:
 
 Note: We're using the `antrun` plugin here to illustrate the proper way to make use of the discovered directories. They will be useful **ONLY IN PLUGIN CONFIGURATIONS, NOT DURING POM INTERPOLATION**.
 
-`execution-root` Goal
+execution-root Goal
 ---------------------
 
 This goal's output is roughly equivalent to using the `${session.executionRootDirectory}` expression in a plugin parameter value. Using the `execution-root` goal in place of `[GOAL NAME]` above, we see the following:
@@ -83,7 +83,7 @@ This goal's output is roughly equivalent to using the `${session.executionRootDi
 
 **NOTE:** This goal will inject a property that contains the absolute path of the directory in which Maven was invoked. Each project will have the property, and any plugins that execute after the `directory:execution-root` runs will have access to it.
 
-`directory-of` Goal
+directory-of Goal
 -------------------
 
 If, instead of the execution root, you need to reference a directory in a specific module within the reactor, but don't want to do endless relative-path calculus, you can use the `directory-of` goal. For this goal to function properly, you need to specify a `project` parameter containing `groupId` and `artifactId`, like this:
@@ -112,7 +112,7 @@ Now, when we substitute `directory-of` for `[GOAL NAME]` in the usage template a
 
 **NOTE:** This goal will function similarly to `execution-root` in terms of injecting a project property for later plugins to use. **HOWEVER**, if the reference project isn't found in the current build session, this goal will fail the build.
 
-`highest-basedir` Goal
+highest-basedir Goal
 ----------------------
 
 If you have a multimodule project structure on disk, and you want the flexibility to reference directories in a parent project's directory structure, even while executing only the child build, you can use the `highest-basedir` goal. This goal will traverse all projects and their parents, going up the inheritance hierarchy until it runs into a POM that was resolved from the repository instead of being built from disk. At this point, it will sort the paths given by `${project.basedir}` for each project, and attempt to select the shortest path from the list.
