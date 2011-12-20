@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+  
+  <groupId>org.commonjava.maven.plugins</groupId>
+  <artifactId>directory-maven-plugin</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>maven-plugin</packaging>
+
+  <name>Directory Maven Plugin</name>
+  <description>
+    Provides goals to discover various paths based on the projects currently building. For example, 
+    directory of the execution root project, directory of a given project (based on groupId/artifactId), 
+    and highest project basedir that hasn't been resolved from the repository.
+  </description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <scm>
+    <connection>scm:git:http://github.com/jdcasey/directory-maven-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jdcasey/directory-maven-plugin.git</developerConnection>
+    <url>http://github.com/jdcasey/directory-maven-plugin</url>
+  </scm>
+  
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven</artifactId>
+        <version>3.0.3</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  
+  <prerequisites>
+    <maven>[3.0,]</maven>
+  </prerequisites>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>2.9</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
