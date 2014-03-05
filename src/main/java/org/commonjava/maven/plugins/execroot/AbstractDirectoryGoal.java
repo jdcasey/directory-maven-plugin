@@ -59,6 +59,11 @@ public abstract class AbstractDirectoryGoal
      */
     protected boolean quiet;
 
+    /**
+     * @parameter default-value="false"
+     */
+    protected boolean systemProperty;
+
     protected Map<String, Object> context;
 
     protected AbstractDirectoryGoal()
@@ -91,6 +96,13 @@ public abstract class AbstractDirectoryGoal
         }
 
         currentProject.getProperties().setProperty( property, execRoot.getAbsolutePath() );
+
+        if (systemProperty) {
+            String existingValue = System.getProperty(property);
+            if (existingValue == null) {
+                System.setProperty(property, execRoot.getAbsolutePath());
+            }
+        }
 
         if ( getLog().isDebugEnabled() )
         {
