@@ -41,6 +41,7 @@ public class DirectoryOfGoal
 
     /**
      * @parameter
+     * @required
      */
     private ProjectRef project;
 

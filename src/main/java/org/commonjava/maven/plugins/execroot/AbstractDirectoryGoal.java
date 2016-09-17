@@ -16,6 +16,13 @@
 
 package org.commonjava.maven.plugins.execroot;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.ContextEnabled;
 import org.apache.maven.plugin.Mojo;
@@ -24,11 +31,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.apache.maven.project.MavenProject;
-
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.Map;
 
 public abstract class AbstractDirectoryGoal
     implements Mojo, ContextEnabled
@@ -97,6 +99,8 @@ public abstract class AbstractDirectoryGoal
 
         currentProject.getProperties().setProperty( property, execRoot.getAbsolutePath() );
 
+        resolveProperties();
+
         if (systemProperty) {
             String existingValue = System.getProperty(property);
             if (existingValue == null) {
@@ -164,5 +168,29 @@ public abstract class AbstractDirectoryGoal
     {
         this.context = context;
     }
+
+    /**
+     * Resolve all properties of current project placeholder against the new property. 
+     */
+	private void resolveProperties() {
+		Properties projectProperties = currentProject.getProperties();
+
+		for (Enumeration<?> n = projectProperties.propertyNames(); n.hasMoreElements();) {
+			String k = (String) n.nextElement();
+			if (!k.equals(property)) {
+				projectProperties.setProperty(k, getPropertyValue(k, projectProperties));
+			}
+		}
+	}
+
+	private String getPropertyValue(String key, Properties properties) {
+		String value = properties.getProperty(key);
+		String placeholder = "${" + property + "}";
+
+		if ( value.contains(placeholder) ) {
+			value = value.replace(placeholder, properties.getProperty(property));
+		}
+		return value;
+	}
 
 }
