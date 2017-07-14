@@ -1,12 +1,12 @@
 /*
  * Copyright 2011 Red Hat, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,9 +30,9 @@ import java.util.Stack;
 
 /**
  * @goal highest-basedir
- * @requiresProject true 
+ * @requiresProject true
  * @phase initialize
- * 
+ *
  * Find the topmost directory in this Maven execution, and set it as a property.
  */
 public class HighestBasedirGoal
@@ -45,7 +45,11 @@ public class HighestBasedirGoal
     {
         public int compare( final File first, final File second )
         {
-            return first.getAbsolutePath().compareTo( second.getAbsolutePath() );
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                return first.getAbsolutePath().compareToIgnoreCase( second.getAbsolutePath() );
+            } else {
+                return first.getAbsolutePath().compareTo( second.getAbsolutePath() );
+            }
         }
     }
 
@@ -59,7 +63,7 @@ public class HighestBasedirGoal
 
     /**
      * {@inheritDoc}
-     * @throws MojoExecutionException 
+     * @throws MojoExecutionException
      * @see org.commonjava.maven.plugins.execroot.AbstractDirectoryGoal#findDirectory()
      */
     @Override
@@ -104,7 +108,13 @@ public class HighestBasedirGoal
         if ( files.size() > 1 )
         {
             final File next = files.get( 1 );
-            if ( !next.getAbsolutePath().startsWith( dir.getAbsolutePath() ) )
+            String dirPath = dir.getAbsolutePath();
+            String nextPath = next.getAbsolutePath();
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                dirPath = dirPath.toLowerCase();
+                nextPath = nextPath.toLowerCase();
+            }
+            if ( !nextPath.startsWith( dirPath ) )
             {
                 throw new MojoExecutionException( "Cannot find a single highest directory for this project set. "
                     + "First two candidates directories don't share a common root." );
