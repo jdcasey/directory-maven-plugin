@@ -22,6 +22,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -83,11 +84,13 @@ public class HighestBasedirGoal
                 continue;
             }
 
-            if ( !files.contains( p.getBasedir() ) )
+            File file = new File(Paths.get(p.getBasedir().toURI()).normalize().toString());
+
+            if ( !files.contains( file ) )
             {
                 // add to zero to maybe help pre-sort the paths...the shortest (parent) paths should end up near the
                 // top.
-                files.add( 0, p.getBasedir() );
+                files.add( 0, file );
             }
 
             if ( p.getParent() != null )
