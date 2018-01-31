@@ -25,6 +25,7 @@ import java.io.File;
  * @goal execution-root
  * @requiresProject true 
  * @phase initialize
+ * @threadSafe true
  * 
  * Find the topmost directory in this Maven execution, and set it as a property.
  */
