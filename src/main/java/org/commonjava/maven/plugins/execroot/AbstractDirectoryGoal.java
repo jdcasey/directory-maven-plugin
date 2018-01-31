@@ -17,24 +17,18 @@
 package org.commonjava.maven.plugins.execroot;
 
 import org.apache.maven.execution.MavenSession;
-import org.apache.maven.plugin.ContextEnabled;
-import org.apache.maven.plugin.Mojo;
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.apache.maven.project.MavenProject;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Map;
 
 public abstract class AbstractDirectoryGoal
-    implements Mojo, ContextEnabled
+    extends AbstractMojo
 {
-
-    private Log log;
 
     /**
      * @parameter default-value="dirProperty"
@@ -64,8 +58,6 @@ public abstract class AbstractDirectoryGoal
      */
     protected boolean systemProperty;
 
-    protected Map<String, Object> context;
-
     protected AbstractDirectoryGoal()
     {
     }
@@ -82,11 +74,11 @@ public abstract class AbstractDirectoryGoal
         synchronized ( session )
         {
             final String key = getContextKey();
-            execRoot = (File) context.get( key );
+            execRoot = (File) getPluginContext().get( key );
             if ( execRoot == null )
             {
                 execRoot = findDirectory();
-                context.put( key, execRoot );
+                getPluginContext().put( key, execRoot );
             }
         }
 
@@ -119,50 +111,5 @@ public abstract class AbstractDirectoryGoal
         throws MojoExecutionException;
 
     protected abstract String getContextKey();
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.maven.plugin.Mojo#getLog()
-     */
-    public synchronized Log getLog()
-    {
-        if ( log == null )
-        {
-            log = new SystemStreamLog();
-        }
-
-        return log;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.apache.maven.plugin.Mojo#setLog(org.apache.maven.plugin.logging.Log)
-     */
-    public void setLog( final Log log )
-    {
-        this.log = log;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.apache.maven.plugin.ContextEnabled#getPluginContext()
-     */
-    @SuppressWarnings( "rawtypes" )
-    public Map getPluginContext()
-    {
-        return context;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.apache.maven.plugin.ContextEnabled#setPluginContext(java.util.Map)
-     */
-    @SuppressWarnings( { "rawtypes", "unchecked" } )
-    public void setPluginContext( final Map context )
-    {
-        this.context = context;
-    }
 
 }

@@ -33,6 +33,7 @@ import java.util.Stack;
  * @goal highest-basedir
  * @requiresProject true
  * @phase initialize
+ * @threadSafe true
  *
  * Find the topmost directory in this Maven execution, and set it as a property.
  */
