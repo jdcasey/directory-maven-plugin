@@ -34,8 +34,6 @@ import java.util.Stack;
  * @requiresProject true
  * @phase initialize
  * @threadSafe true
- *
- * Find the topmost directory in this Maven execution, and set it as a property.
  */
 public class HighestBasedirGoal
     extends AbstractDirectoryGoal
