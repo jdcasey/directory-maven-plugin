@@ -118,6 +118,8 @@ public class HighestBasedirGoal
             }
             if ( !nextPath.startsWith( dirPath ) )
             {
+                getLog().error("Candidate 1: " + dirPath);
+                getLog().error("Candidate 2: " + nextPath);
                 throw new MojoExecutionException( "Cannot find a single highest directory for this project set. "
                     + "First two candidates directories don't share a common root." );
             }
