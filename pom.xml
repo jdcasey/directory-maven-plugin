@@ -24,7 +24,7 @@
   
   <groupId>org.commonjava.maven.plugins</groupId>
   <artifactId>directory-maven-plugin</artifactId>
-  <version>0.4-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>maven-plugin</packaging>
 
   <name>Directory Maven Plugin</name>
