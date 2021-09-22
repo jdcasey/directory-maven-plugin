@@ -73,11 +73,14 @@ public class HighestBasedirGoal
         final Stack<MavenProject> toCheck = new Stack<MavenProject>();
         toCheck.addAll( projects );
 
+        // exclude projects loaded directly from the local repository (super-pom's etc)
+        String localRepoBaseDir = session.getLocalRepository().getBasedir();
+
         final List<File> files = new ArrayList<File>();
         while ( !toCheck.isEmpty() )
         {
             final MavenProject p = toCheck.pop();
-            if ( p.getBasedir() == null )
+            if ( (p.getBasedir() == null || (p.getBasedir().toString().startsWith(localRepoBaseDir))) )
             {
                 // we've hit a parent that was resolved. Don't bother going higher up the hierarchy.
                 continue;
@@ -118,6 +121,8 @@ public class HighestBasedirGoal
             }
             if ( !nextPath.startsWith( dirPath ) )
             {
+                getLog().error("Candidate 1: " + dirPath);
+                getLog().error("Candidate 2: " + nextPath);
                 throw new MojoExecutionException( "Cannot find a single highest directory for this project set. "
                     + "First two candidates directories don't share a common root." );
             }
