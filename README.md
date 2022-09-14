@@ -24,45 +24,47 @@ Using
 
 The basic plugin declaration looks like the following:
 
-    <build>
-      <plugins>
-        <plugin>
-          <groupId>org.commonjava.maven.plugins</groupId>
-          <artifactId>directory-maven-plugin</artifactId>
-          <version>0.1</version>
-          <executions>
-            <execution>
-              <id>directories</id>
-              <goals>
-                <goal>[GOAL NAME]</goal>
-              </goals>
-              <phase>initialize</phase>
-              <configuration>
-                <property>myDirectory</property>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.7</version>
-          <executions>
-            <execution>
-              <id>echo</id>
-              <phase>initialize</phase>
-              <goals>
-                <goal>run</goal>
-              </goals>
-              <configuration>
-                <target>
-                  <echo>Test Configuration Directory: ${myDirectory}/src/test/configs</echo>
-                </target>
-              </configuration>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </build>
+```xml
+<build>
+  <plugins>
+    <plugin>
+      <groupId>org.commonjava.maven.plugins</groupId>
+      <artifactId>directory-maven-plugin</artifactId>
+      <version>0.1</version>
+      <executions>
+        <execution>
+          <id>directories</id>
+          <goals>
+            <goal>[GOAL NAME]</goal>
+          </goals>
+          <phase>initialize</phase>
+          <configuration>
+            <property>myDirectory</property>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+    <plugin>
+      <artifactId>maven-antrun-plugin</artifactId>
+      <version>1.7</version>
+      <executions>
+        <execution>
+          <id>echo</id>
+          <phase>initialize</phase>
+          <goals>
+            <goal>run</goal>
+          </goals>
+          <configuration>
+            <target>
+              <echo>Test Configuration Directory: ${myDirectory}/src/test/configs</echo>
+            </target>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
+  </plugins>
+</build>
+```
 
 Note: We're using the `antrun` plugin here to illustrate the proper way to make use of the discovered directories. They will be useful **ONLY IN PLUGIN CONFIGURATIONS, NOT DURING POM INTERPOLATION**.
 
@@ -71,15 +73,16 @@ execution-root Goal
 
 This goal's output is roughly equivalent to using the `${session.executionRootDirectory}` expression in a plugin parameter value. Using the `execution-root` goal in place of `[GOAL NAME]` above, we see the following:
 
-    [INFO] --- directory-maven-plugin:0.1-SNAPSHOT:execution-root (directories) @ routem-web-admin ---
-    [INFO] Execution-Root set to: /Users/jdcasey/workspace/couch-java-looseLeaf/routem
-    [INFO] 
-    [INFO] --- maven-antrun-plugin:1.7:run (echo) @ routem-web-admin ---
-    [INFO] Executing tasks
+```
+[INFO] --- directory-maven-plugin:0.1-SNAPSHOT:execution-root (directories) @ routem-web-admin ---
+[INFO] Execution-Root set to: /Users/jdcasey/workspace/couch-java-looseLeaf/routem
+[INFO] 
+[INFO] --- maven-antrun-plugin:1.7:run (echo) @ routem-web-admin ---
+[INFO] Executing tasks
 
-    main:
-         [echo] Test Configuration Directory: /Users/jdcasey/workspace/couch-java-looseLeaf/routem/src/test/configs
-
+main:
+     [echo] Test Configuration Directory: /Users/jdcasey/workspace/couch-java-looseLeaf/routem/src/test/configs
+```
 
 **NOTE:** This goal will inject a property that contains the absolute path of the directory in which Maven was invoked. Each project will have the property, and any plugins that execute after the `directory:execution-root` runs will have access to it.
 
@@ -88,27 +91,28 @@ directory-of Goal
 
 If, instead of the execution root, you need to reference a directory in a specific module within the reactor, but don't want to do endless relative-path calculus, you can use the `directory-of` goal. For this goal to function properly, you need to specify a `project` parameter containing `groupId` and `artifactId`, like this:
 
-    <configuration>
-      <property>myDirectory</property>
-      <project>
-        <groupId>org.commonjava.routem</groupId>
-        <artifactId>routem-api</artifactId>
-      </project>
-    </configuration>
-
+```xml
+<configuration>
+  <property>myDirectory</property>
+  <project>
+    <groupId>org.commonjava.routem</groupId>
+    <artifactId>routem-api</artifactId>
+  </project>
+</configuration>
+```
 
 Now, when we substitute `directory-of` for `[GOAL NAME]` in the usage template above, we get output like this:
 
+```
+[INFO] --- directory-maven-plugin:0.1-SNAPSHOT:directory-of (directories) @ routem-web-admin ---
+[INFO] Directory of org.commonjava.routem:routem-api set to: /Users/jdcasey/workspace/couch-java-looseLeaf/routem/api
+[INFO] 
+[INFO] --- maven-antrun-plugin:1.7:run (echo) @ routem-web-admin ---
+[INFO] Executing tasks
 
-    [INFO] --- directory-maven-plugin:0.1-SNAPSHOT:directory-of (directories) @ routem-web-admin ---
-    [INFO] Directory of org.commonjava.routem:routem-api set to: /Users/jdcasey/workspace/couch-java-looseLeaf/routem/api
-    [INFO] 
-    [INFO] --- maven-antrun-plugin:1.7:run (echo) @ routem-web-admin ---
-    [INFO] Executing tasks
-
-    main:
-         [echo] Test Configuration Directory: /Users/jdcasey/workspace/couch-java-looseLeaf/routem/api/src/test/configs
-
+main:
+     [echo] Test Configuration Directory: /Users/jdcasey/workspace/couch-java-looseLeaf/routem/api/src/test/configs
+```
 
 **NOTE:** This goal will function similarly to `execution-root` in terms of injecting a project property for later plugins to use. **HOWEVER**, if the reference project isn't found in the current build session, this goal will fail the build.
 
@@ -121,13 +125,15 @@ If the multimodule hierarchy uses multiple sibling parents from the disk that ar
 
 If we modify the `execution-root` example to use the `highest-basedir` goal, then execute from the web/admin subdirectory of our sample project, we will see the following:
 
-    [INFO] --- directory-maven-plugin:0.1-SNAPSHOT:highest-basedir (directories) @ routem-web-admin ---
-    [INFO] Highest basedir set to: /Users/jdcasey/workspace/couch-java-looseLeaf/routem
-    [INFO] 
-    [INFO] --- maven-antrun-plugin:1.7:run (echo) @ routem-web-admin ---
-    [INFO] Executing tasks
+```
+[INFO] --- directory-maven-plugin:0.1-SNAPSHOT:highest-basedir (directories) @ routem-web-admin ---
+[INFO] Highest basedir set to: /Users/jdcasey/workspace/couch-java-looseLeaf/routem
+[INFO] 
+[INFO] --- maven-antrun-plugin:1.7:run (echo) @ routem-web-admin ---
+[INFO] Executing tasks
 
-    main:
-         [echo] Test Configuration Directory: /Users/jdcasey/workspace/couch-java-looseLeaf/routem/src/test/configs
+main:
+     [echo] Test Configuration Directory: /Users/jdcasey/workspace/couch-java-looseLeaf/routem/src/test/configs
+```
 
 That is, the highest parent basedir attainable using the `relativePath` element of the projects' `parent` specifications.
